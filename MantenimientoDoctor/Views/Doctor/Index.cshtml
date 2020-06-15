@@ -1,0 +1,58 @@
+﻿@model IEnumerable<MantenimientoDoctor.ViewModels.DoctorViewModel>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card text-center">
+    <div class=" bg-dark text-light card-header">
+        <strong>Listado de doctores</strong>
+    </div>
+    <div class="card-body">
+        
+        <div class="row">
+
+            <div class="col-md-9"></div>
+            <div class="col-md-3">  <a style="margin-bottom: 2%;" asp-action="Create" class="btn btn-outline-success float-right">Crear nuevo doctor</a></div>
+
+           
+
+        </div>
+
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Telefono)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Nombre)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Correo)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.FechaNacimiento)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.CodigoPostal)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Photo)</th>
+                    <th scope="col">Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @{ var photoPath = "~/images/Doctor/" + (!string.IsNullOrEmpty(item.ProfilePhoto) ? item.ProfilePhoto : "defualt.jpg"); }
+                        <td> @item.Id </td>
+                        <td> @item.Telefono </td>
+                        <td> @item.Nombre</td>
+                        <td> @item.Correo</td>
+                        <td>@item.FechaNacimiento</td>
+                        <td>@item.CodigoPostal</td>
+                        <td> <img src="@photoPath" asp-append-version="true"  width="300" height="300" ></td>
+                        <td> <a class="btn btn-outline-info" asp-action="Edit" asp-route-id="@item.Id"> Editar </a>
+                            <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id"> Borrar </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+

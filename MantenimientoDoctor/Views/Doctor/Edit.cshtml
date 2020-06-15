@@ -1,0 +1,101 @@
+﻿@model MantenimientoDoctor.ViewModels.DoctorViewModel
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.Especialidades.Count == 0)
+{
+    <h2>No hay especialidades creada</h2>
+
+    <a asp-action="Index" class="btn btn-outline-dark">Volver atras</a>
+}
+else
+{
+
+    <div class="card">
+        <div class=" bg-info text-light card-header">
+
+            <a asp-action="Index" class="btn btn-warning text-light">Volver atras</a>
+            <strong>Edicion del doctor - @Model.Nombre </strong>
+        </div>
+        <div class="card-body">
+
+            <form enctype="multipart/form-data" asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="Id"/>
+
+                <div class="row">
+
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Nombre"></label>
+                        <input asp-for="Nombre" class="form-control">
+                        <span asp-validation-for="Nombre" class="text-danger"> </span>
+                    </div>
+
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Correo"></label>
+                        <input asp-for="Correo" class="form-control">
+                        <span asp-validation-for="Correo" class="text-danger"> </span>
+                    </div>
+
+                    <div class="col-md-4 form-group">
+                        <label asp-for="FechaNacimiento"></label>
+                        <input asp-for="FechaNacimiento" class="form-control">
+                        <span asp-validation-for="FechaNacimiento" class="text-danger"> </span>
+                    </div>
+
+                    <div class="col-md-4 form-group">
+                        <label asp-for="CodigoPostal"></label>
+                        <input asp-for="CodigoPostal" class="form-control">
+                        <span asp-validation-for="CodigoPostal" class="text-danger"> </span>
+                    </div>
+
+
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Telefono"></label>
+                        <input asp-for="Telefono" class="form-control">
+                        <span asp-validation-for="Telefono" class="text-danger"> </span>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label asp-for="EspecialidadIds"></label>
+                        <select asp-for="EspecialidadIds" asp-items="@(new SelectList(ViewBag.Especialidades, "Id", "Nombre"))" multiple="multiple" asp class="form-control"></select>
+                        <span asp-validation-for="Photo" class="text-danger"> </span>
+                    </div>
+
+                    <div class="col-md-4 form-group">
+                        <div class="card">
+
+                            @{ var photoPath = "~/images/Doctor/" + (!string.IsNullOrEmpty(Model.ProfilePhoto) ? Model.ProfilePhoto : ""); }
+
+                            @if (!string.IsNullOrEmpty(Model.ProfilePhoto))
+                            {
+                                <img src="@photoPath" asp-append-version="true" class="card-img-top" alt="...">
+                            }
+
+                            <div class="card-body">
+
+                                <label asp-for="Photo"></label>
+                                <input asp-for="Photo" class="form-control">
+                                <span asp-validation-for="Photo" class="text-danger"> </span>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="text-center form-group">
+                    <button type="submit" class="btn btn-outline-primary">Guardar</button>
+                    <button type="reset" class="btn btn-outline-warning">Limpiar</button>
+                </div>
+            </form>
+
+
+        </div>
+
+    </div>
+
+}

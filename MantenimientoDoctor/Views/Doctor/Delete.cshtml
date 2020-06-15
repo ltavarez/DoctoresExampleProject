@@ -1,0 +1,28 @@
+﻿@model MantenimientoDoctor.ViewModels.DoctorViewModel
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class=" bg-danger text-light card-header">
+
+        <a asp-action="Index" class="btn btn-warning text-light">Volver atras</a>
+        <strong>Borrar Doctor - @Model.Nombre</strong>
+    </div>
+    <div class="card-body">
+        
+        <h2> Esta seguro que deseas eliminar a este Doctor?</h2>
+        
+        <form asp-action="DeleteConfirmed" method="post">
+            <input type="hidden" asp-for="Id">
+            <button type="submit" class="btn btn-danger text-light"> Eliminar </button>
+            <a asp-action="Index" class="btn btn-light text-dark"> Cancelar </a>
+        </form>
+        
+
+
+    </div>
+
+</div>
+

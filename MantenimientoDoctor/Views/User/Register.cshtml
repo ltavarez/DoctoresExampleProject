@@ -1,0 +1,67 @@
+﻿@model MantenimientoDoctor.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+
+<div class="card">
+    <div class=" bg-dark text-light card-header">
+
+        <a asp-action="Login" class="btn btn-warning text-light">Volver atras</a>
+        <strong>Registro de usuario</strong>
+    </div>
+    <div class="card-body">
+        
+
+
+        <form asp-action="Register" method="post">
+            
+            <div asp-validation-summary="All" class="text-danger">
+   
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nombre"></label>
+                <input asp-for="Nombre" class="form-control">
+                <span asp-validation-for="Nombre" class="text-danger"> </span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Correo"></label>
+                <input asp-for="Correo" class="form-control">
+                <span asp-validation-for="Correo" class="text-danger"> </span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="NombreUsuario"></label>
+                <input asp-for="NombreUsuario" class="form-control">
+                <span asp-validation-for="NombreUsuario" class="text-danger"> </span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control">
+                <span asp-validation-for="Password" class="text-danger"> </span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" class="form-control">
+                <span asp-validation-for="ConfirmPassword" class="text-danger"> </span>
+            </div>
+
+
+
+            <div class="text-center form-group">
+                <button type="submit" class="btn btn-outline-primary">Crear</button>
+                <button type="reset" class="btn btn-outline-warning">Limpiar</button>
+            </div>
+
+        </form>
+
+
+    </div>
+
+</div>
+

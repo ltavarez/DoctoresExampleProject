@@ -1,0 +1,35 @@
+﻿@model MantenimientoDoctor.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+
+<link href="~/css/login.css" rel="stylesheet" />
+
+<form asp-action="Login" method="post" class="form-signin">
+ 
+    <h1 class="h3 mb-3 font-weight-normal">Doctor App</h1>
+    
+    <div asp-validation-summary="All" class="text-danger">
+   
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="NombreUsuario" ></label>
+        <input asp-for="NombreUsuario" class="form-control">
+        <span asp-validation-for="NombreUsuario" class="text-danger" ></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="Password" ></label>
+        <input asp-for="Password" class="form-control">
+        <span asp-validation-for="Password" class="text-danger" ></span>
+    </div>
+
+  
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Enviar</button>
+    <a asp-action="Register" class="btn btn-lg text-light btn-dark btn-block" >Registro</a>
+    <p class="mt-5 mb-3 text-muted">© 2017-2020</p>
+</form>
+
