@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.28307.1145
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MantenimientoDoctor", "MantenimientoDoctor\MantenimientoDoctor.csproj", "{14034D04-D617-4DEA-B37A-1044BE49B175}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{D11BBCEE-B5E8-4DE7-98DB-27691E85369E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\Database.csproj", "{D11BBCEE-B5E8-4DE7-98DB-27691E85369E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Email", "Email\Email.csproj", "{ABA39C28-7657-4C02-9C07-56F436B115B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D11BBCEE-B5E8-4DE7-98DB-27691E85369E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D11BBCEE-B5E8-4DE7-98DB-27691E85369E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D11BBCEE-B5E8-4DE7-98DB-27691E85369E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABA39C28-7657-4C02-9C07-56F436B115B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABA39C28-7657-4C02-9C07-56F436B115B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABA39C28-7657-4C02-9C07-56F436B115B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABA39C28-7657-4C02-9C07-56F436B115B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

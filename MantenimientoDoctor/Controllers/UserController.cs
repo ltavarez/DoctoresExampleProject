@@ -5,9 +5,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using MantenimientoDoctor.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Database.Model;
+using Email;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,9 +20,14 @@ namespace MantenimientoDoctor.Controllers
 
         private readonly ConsultorioMedicoContext _context;
 
-        public UserController(ConsultorioMedicoContext context)
+        private readonly IEmailSender _emailSender;
+        private readonly IMapper _mapper;
+
+        public UserController(ConsultorioMedicoContext context,IEmailSender emailSender, IMapper mapper)
         {
             _context = context;
+            _emailSender = emailSender;
+            _mapper = mapper;
         }
         public IActionResult Login()
         {
@@ -56,6 +63,12 @@ namespace MantenimientoDoctor.Controllers
                 if (user != null)
                 {
                     HttpContext.Session.SetString("UserName", vm.NombreUsuario);
+
+                    var message = new Message(new string[]{user.Correo},"Seguridad","Han ingresado a tu cuenta de Doctor app" );
+
+                    await _emailSender.SendMailAsync(message);
+
+
                     return RedirectToAction("Index","Doctor");
                 }
                 else
@@ -97,13 +110,9 @@ namespace MantenimientoDoctor.Controllers
 
             if (ModelState.IsValid)
             {
-                var usuarioEntity = new Usuario
-                {
-                    Nombre = vm.Nombre,
-                    NombreUsuario = vm.NombreUsuario,
-                    Correo = vm.Correo,
-                    Password = PasswordEncryption(vm.Password)
-                };
+
+                var usuarioEntity = _mapper.Map<Usuario>(vm);
+                usuarioEntity.Password = PasswordEncryption(vm.Password);
 
                 var user = await _context.Usuario.FirstOrDefaultAsync(c => c.NombreUsuario == vm.NombreUsuario);
 

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace MantenimientoDoctor.Controllers
 {
@@ -17,11 +18,13 @@ namespace MantenimientoDoctor.Controllers
 
         private readonly ConsultorioMedicoContext _context;
         private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IMapper _mapper;
 
-        public DoctorController(ConsultorioMedicoContext context, IHostingEnvironment hostingEnvironment)
+        public DoctorController(ConsultorioMedicoContext context, IHostingEnvironment hostingEnvironment, IMapper mapper)
         {
             _context = context;
             this.hostingEnvironment = hostingEnvironment;
+            this._mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -53,16 +56,8 @@ namespace MantenimientoDoctor.Controllers
 
             listadoDoctores.ForEach(item =>
             {
-                vms.Add(new DoctorViewModel
-                {
-                    Id = item.Id,
-                    Nombre = item.Nombre,
-                    Correo = item.Correo,
-                    CodigoPostal = item.CodigoPostal,
-                    FechaNacimiento = item.FechaNacimiento,
-                    Telefono = item.Telefono,
-                    ProfilePhoto = item.ProfilePhoto
-                });
+                var vm = _mapper.Map<DoctorViewModel>(item);
+                vms.Add(vm);
             });
 
             return View(vms);
@@ -83,11 +78,8 @@ namespace MantenimientoDoctor.Controllers
 
             especilidadEntity.ForEach(item =>
             {
-                listEspecialidadesVm.Add(new EspecialidadViewModel
-                {
-                    Id = item.Id,
-                    Nombre = item.Nombre
-                });
+                var vm = _mapper.Map<EspecialidadViewModel>(item);
+                listEspecialidadesVm.Add(vm);
             });
 
             ViewBag.Especialidades = listEspecialidadesVm;
@@ -116,16 +108,7 @@ namespace MantenimientoDoctor.Controllers
                 return NotFound();
             }
 
-            var vm = new DoctorViewModel
-            {
-                Id = doctor.Id,
-                Nombre = doctor.Nombre,
-                Correo = doctor.Correo,
-                CodigoPostal = doctor.CodigoPostal,
-                FechaNacimiento = doctor.FechaNacimiento,
-                Telefono = doctor.Telefono,
-                ProfilePhoto = doctor.ProfilePhoto
-            };
+            var vm = _mapper.Map<DoctorViewModel>(doctor);
 
             var especilidadEntity = await _context.Especialidad.ToListAsync();
 
@@ -133,11 +116,8 @@ namespace MantenimientoDoctor.Controllers
 
             especilidadEntity.ForEach(item =>
             {
-                listEspecialidadesVm.Add(new EspecialidadViewModel
-                {
-                    Id = item.Id,
-                    Nombre = item.Nombre
-                });
+                var vmEspecialidad = _mapper.Map<EspecialidadViewModel>(item);
+                listEspecialidadesVm.Add(vmEspecialidad);
             });
 
             ViewBag.Especialidades = listEspecialidadesVm;
@@ -171,16 +151,7 @@ namespace MantenimientoDoctor.Controllers
                 return NotFound();
             }
 
-            var vm = new DoctorViewModel
-            {
-                Id = doctor.Id,
-                Nombre = doctor.Nombre,
-                Correo = doctor.Correo,
-                CodigoPostal = doctor.CodigoPostal,
-                FechaNacimiento = doctor.FechaNacimiento,
-                Telefono = doctor.Telefono
-            };
-
+            var vm = _mapper.Map<DoctorViewModel>(doctor);
             return View(vm);
         }
 
@@ -217,16 +188,8 @@ namespace MantenimientoDoctor.Controllers
 
                 }
 
-                var doctorEntity = new Doctor()
-                {
-                    Id = vm.Id,
-                    Nombre = vm.Nombre,
-                    Correo = vm.Correo,
-                    CodigoPostal = vm.CodigoPostal,
-                    FechaNacimiento = vm.FechaNacimiento,
-                    Telefono = vm.Telefono,
-                    ProfilePhoto = uniqueName
-                };
+                var doctorEntity = _mapper.Map<Doctor>(vm);
+                doctorEntity.ProfilePhoto = uniqueName;
 
                 _context.Add(doctorEntity);
                 await _context.SaveChangesAsync();

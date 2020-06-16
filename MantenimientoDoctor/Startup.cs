@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using AutoMapper;
 using Database.Model;
+using Email;
+using MantenimientoDoctor.Infraestructure.AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -37,7 +41,12 @@ namespace MantenimientoDoctor
 
             services.AddSession(so => { so.IdleTimeout = TimeSpan.FromHours(4); });
 
-                
+            var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
+
+            services.AddAutoMapper(typeof(AutomapperConfiguration).GetTypeInfo().Assembly);
+
+            services.AddScoped<IEmailSender, GmailSender>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

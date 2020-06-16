@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace MantenimientoDoctor.Controllers
     public class EspecialidadController : Controller
     {
         private readonly ConsultorioMedicoContext _context;
+        private readonly IMapper _mapper;
 
-        public EspecialidadController(ConsultorioMedicoContext context)
+        public EspecialidadController(ConsultorioMedicoContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: Especialidad
@@ -35,11 +38,8 @@ namespace MantenimientoDoctor.Controllers
 
             listEntity.ForEach(item =>
             {
-                vms.Add(new EspecialidadViewModel
-                {
-                    Id = item.Id,
-                    Nombre = item.Nombre
-                });
+                var vm = _mapper.Map<EspecialidadViewModel>(item);
+                vms.Add(vm);
             });
 
             return View(vms);
@@ -66,11 +66,7 @@ namespace MantenimientoDoctor.Controllers
                 return NotFound();
             }
 
-            var vm = new EspecialidadViewModel
-            {
-                Id = especialidad.Id,
-                Nombre = especialidad.Nombre
-            };
+            var vm = _mapper.Map<EspecialidadViewModel>(especialidad);
 
             return View(vm);
         }
@@ -103,12 +99,7 @@ namespace MantenimientoDoctor.Controllers
             if (ModelState.IsValid)
             {
 
-                var entity = new Especialidad
-                {
-                    Id = vm.Id,
-                    Nombre = vm.Nombre
-                };
-
+                var entity = _mapper.Map<Especialidad>(vm);
                 _context.Add(entity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -136,11 +127,7 @@ namespace MantenimientoDoctor.Controllers
                 return NotFound();
             }
 
-            var vm = new EspecialidadViewModel
-            {
-                Id = especialidad.Id,
-                Nombre = especialidad.Nombre
-            };
+            var vm = _mapper.Map<EspecialidadViewModel>(especialidad);
             return View(vm);
         }
 
