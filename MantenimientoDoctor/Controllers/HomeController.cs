@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Database.Model;
-using MantenimientoDoctor.ViewModels;
+using ViewModels;
 
 namespace MantenimientoDoctor.Controllers
 {

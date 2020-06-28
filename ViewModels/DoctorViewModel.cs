@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 
-namespace MantenimientoDoctor.ViewModels
+namespace ViewModels
 {
     public class DoctorViewModel
     {
@@ -32,7 +30,7 @@ namespace MantenimientoDoctor.ViewModels
         public string CodigoPostal { get; set; }
 
         [Display(Name = "Foto")]
-        public IFormFile Photo { get; set; }
+        public FormFile Photo { get; set; }
 
         [Display(Name = "Especialidades")]
         public List<int> EspecialidadIds { get; set; }

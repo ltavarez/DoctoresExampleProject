@@ -7,9 +7,11 @@ using AutoMapper;
 using Database.Model;
 using Email;
 using MantenimientoDoctor.Infraestructure.AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -46,6 +48,20 @@ namespace MantenimientoDoctor
 
             services.AddAutoMapper(typeof(AutomapperConfiguration).GetTypeInfo().Assembly);
 
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+                {
+                    options.Password = new PasswordOptions
+                    {
+                        RequireDigit = true,
+                        RequiredLength = 6,
+                        RequireLowercase = false,
+                        RequireUppercase = false,
+                        RequireNonAlphanumeric = false
+                    };
+                })
+                .AddEntityFrameworkStores<ConsultorioMedicoContext>().AddDefaultTokenProviders();
+
+        
             services.AddScoped<IEmailSender, GmailSender>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -66,12 +82,15 @@ namespace MantenimientoDoctor
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();
+            app.UseAuthentication();
+
+      
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=User}/{action=Login}/{id?}");
+                    template: "{controller=Account}/{action=Login}/{id?}");
             });
         }
     }

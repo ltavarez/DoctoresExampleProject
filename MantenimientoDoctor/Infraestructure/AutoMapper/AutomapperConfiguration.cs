@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Database.Model;
-using MantenimientoDoctor.ViewModels;
+using ViewModels;
 
 namespace MantenimientoDoctor.Infraestructure.AutoMapper
 {
@@ -32,7 +32,10 @@ namespace MantenimientoDoctor.Infraestructure.AutoMapper
 
         private void ConfigureUsuario()
         {
-            CreateMap<RegisterViewModel, Usuario>().ReverseMap().ForMember(dest => dest.ConfirmPassword, opt => opt.Ignore());
+            CreateMap<RegisterViewModel, Usuario>().ReverseMap()
+                .ForMember(dest => dest.ConfirmPassword, opt => opt.Ignore())
+                .ForMember(dest => dest.Roles, opt => opt.Ignore())
+                .ForMember(dest => dest.SelectedRol, opt => opt.Ignore());
         }
     }
 }

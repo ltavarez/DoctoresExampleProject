@@ -38,7 +38,7 @@
                         </li>
                         
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Cerrar sesion(@Context.Session.GetString("UserName"))</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Cerrar sesion(@User.Identity.Name)</a>
                         </li>
                     </ul>
                 </div>

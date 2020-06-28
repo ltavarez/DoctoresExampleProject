@@ -1,5 +1,4 @@
 ﻿using Database.Model;
-using MantenimientoDoctor.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,32 +9,34 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using ViewModels;
 
 namespace MantenimientoDoctor.Controllers
 {
+
+    [Authorize(Roles="doctor")]
     public class DoctorController : Controller
     {
 
         private readonly ConsultorioMedicoContext _context;
         private readonly IHostingEnvironment hostingEnvironment;
         private readonly IMapper _mapper;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public DoctorController(ConsultorioMedicoContext context, IHostingEnvironment hostingEnvironment, IMapper mapper)
+        public DoctorController(ConsultorioMedicoContext context, IHostingEnvironment hostingEnvironment, IMapper mapper, UserManager<IdentityUser> userManager)
         {
             _context = context;
             this.hostingEnvironment = hostingEnvironment;
             this._mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
 
-            var userEntity = await _context.Usuario.FirstOrDefaultAsync(c => c.NombreUsuario == user);
+            var userEntity = await _userManager.FindByNameAsync(User.Identity.Name);
 
             var idsUserDoctor = new List<int?>();
 
@@ -66,12 +67,6 @@ namespace MantenimientoDoctor.Controllers
         //GET
         public async Task<IActionResult> Create()
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
             var especilidadEntity = await _context.Especialidad.ToListAsync();
 
             List<EspecialidadViewModel> listEspecialidadesVm = new List<EspecialidadViewModel>();
@@ -90,12 +85,7 @@ namespace MantenimientoDoctor.Controllers
         //GET
         public async Task<IActionResult> Edit(int? id)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
+          
             if (id == null)
             {
                 return NotFound();
@@ -133,12 +123,7 @@ namespace MantenimientoDoctor.Controllers
         //GET
         public async Task<IActionResult> Delete(int? id)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
+         
             if (id == null)
             {
                 return NotFound();
@@ -158,11 +143,7 @@ namespace MantenimientoDoctor.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(DoctorViewModel vm)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
+          
 
             if (ModelState.IsValid)
             {
@@ -217,12 +198,7 @@ namespace MantenimientoDoctor.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int? Id, DoctorViewModel vm)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
+          
             if (Id != vm.Id)
             {
                 return NotFound();
@@ -316,11 +292,11 @@ namespace MantenimientoDoctor.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(int? Id)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
+            //var user = HttpContext.Session.GetString("UserName");
+            //if (string.IsNullOrEmpty(user))
+            //{
+            //    return RedirectToAction("AccesoDenegado", "Home");
+            //}
 
             var doctor = await _context.Doctor.FirstOrDefaultAsync(x => x.Id == Id);
 

@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Database.Model;
-using MantenimientoDoctor.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using ViewModels;
 
 namespace MantenimientoDoctor.Controllers
 {
+    [Authorize(Roles = "especialista,doctor")]
     public class EspecialidadController : Controller
     {
         private readonly ConsultorioMedicoContext _context;
@@ -26,13 +28,7 @@ namespace MantenimientoDoctor.Controllers
         // GET: Especialidad
         public async Task<IActionResult> Index()
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
-            var listEntity = await _context.Especialidad.ToListAsync();
+           var listEntity = await _context.Especialidad.ToListAsync();
 
             List<EspecialidadViewModel> vms = new List<EspecialidadViewModel>();
 
@@ -45,16 +41,12 @@ namespace MantenimientoDoctor.Controllers
             return View(vms);
         }
 
+      
+
         // GET: Especialidad/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
-            if (id == null)
+           if (id == null)
             {
                 return NotFound();
             }
@@ -74,12 +66,7 @@ namespace MantenimientoDoctor.Controllers
         // GET: Especialidad/Create
         public IActionResult Create()
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
+          
             return View();
         }
 
@@ -90,12 +77,6 @@ namespace MantenimientoDoctor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EspecialidadViewModel vm)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
             if (ModelState.IsValid)
             {
 
@@ -110,12 +91,7 @@ namespace MantenimientoDoctor.Controllers
         // GET: Especialidad/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
+           
             if (id == null)
             {
                 return NotFound();
@@ -138,12 +114,6 @@ namespace MantenimientoDoctor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,EspecialidadViewModel vm)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
             if (id != vm.Id)
             {
                 return NotFound();
@@ -181,12 +151,7 @@ namespace MantenimientoDoctor.Controllers
         // GET: Especialidad/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
+           
             if (id == null)
             {
                 return NotFound();
@@ -213,13 +178,7 @@ namespace MantenimientoDoctor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(user))
-            {
-                return RedirectToAction("AccesoDenegado", "Home");
-            }
-
-            var especialidad = await _context.Especialidad.FindAsync(id);
+           var especialidad = await _context.Especialidad.FindAsync(id);
             _context.Especialidad.Remove(especialidad);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

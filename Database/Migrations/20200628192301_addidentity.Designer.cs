@@ -4,14 +4,16 @@ using Database.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(ConsultorioMedicoContext))]
-    partial class ConsultorioMedicoContextModelSnapshot : ModelSnapshot
+    [Migration("20200628192301_addidentity")]
+    partial class addidentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +128,9 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Model.Usuario", b =>
                 {
-                    b.Property<string>("Id");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Correo");
 
@@ -151,12 +155,13 @@ namespace Database.Migrations
 
                     b.Property<int?>("DoctorId");
 
-                    b.Property<string>("UsuarioId")
-                        .HasMaxLength(450);
+                    b.Property<int?>("UsuarioId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DoctorId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("UsuarioDoctor");
                 });
@@ -386,6 +391,11 @@ namespace Database.Migrations
                         .WithMany("UsuarioDoctor")
                         .HasForeignKey("DoctorId")
                         .HasConstraintName("FK_UsuarioDoctor_Doctor");
+
+                    b.HasOne("Database.Model.Usuario", "Usuario")
+                        .WithMany("UsuarioDoctor")
+                        .HasForeignKey("UsuarioId")
+                        .HasConstraintName("FK_UsuarioDoctor_Usuario");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

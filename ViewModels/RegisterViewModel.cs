@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace MantenimientoDoctor.ViewModels
+namespace ViewModels
 {
     public class RegisterViewModel
     {
@@ -30,6 +27,11 @@ namespace MantenimientoDoctor.ViewModels
         [Compare("Password",ErrorMessage = "No coinciden las contraseñas")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
+
+        public List<RolViewModel> Roles { get; set; }
+
+        [Display(Name = "Perfil")]
+        public string SelectedRol { get; set; }
 
     }
 }

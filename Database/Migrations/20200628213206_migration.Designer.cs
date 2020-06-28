@@ -4,14 +4,16 @@ using Database.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Database.Migrations
 {
     [DbContext(typeof(ConsultorioMedicoContext))]
-    partial class ConsultorioMedicoContextModelSnapshot : ModelSnapshot
+    [Migration("20200628213206_migration")]
+    partial class migration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
