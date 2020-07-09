@@ -1,35 +1,40 @@
-﻿using Database.Model;
+﻿using AutoMapper;
+using Database.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Repository.Repository;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using ViewModels;
 
 namespace MantenimientoDoctor.Controllers
 {
 
-    [Authorize(Roles="doctor")]
+    [Authorize(Roles = "doctor")]
     public class DoctorController : Controller
     {
 
-        private readonly ConsultorioMedicoContext _context;
-        private readonly IHostingEnvironment hostingEnvironment;
+
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IMapper _mapper;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly DoctorRepository _repository;
+        private readonly EspecialidadRepository _repositoryEspecialidad;
+        private readonly DoctorEspecialidadRepository _repositoryDoctorEspecialidad;
 
-        public DoctorController(ConsultorioMedicoContext context, IHostingEnvironment hostingEnvironment, IMapper mapper, UserManager<IdentityUser> userManager)
+
+        public DoctorController(DoctorRepository repository, EspecialidadRepository repositoryEspecialidad, DoctorEspecialidadRepository repositoryDoctorEspecialidad, IHostingEnvironment hostingEnvironment, IMapper mapper, UserManager<IdentityUser> userManager)
         {
-            _context = context;
-            this.hostingEnvironment = hostingEnvironment;
-            this._mapper = mapper;
+            _repository = repository;
+            _repositoryEspecialidad = repositoryEspecialidad;
+            _repositoryDoctorEspecialidad = repositoryDoctorEspecialidad;
+           _hostingEnvironment = hostingEnvironment;
+            _mapper = mapper;
             _userManager = userManager;
         }
 
@@ -38,21 +43,12 @@ namespace MantenimientoDoctor.Controllers
 
             var userEntity = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            var idsUserDoctor = new List<int?>();
+            var listadoDoctores = new List<Doctor>();
 
             if (userEntity != null)
             {
-                idsUserDoctor = await _context.UsuarioDoctor.Where(c => c.UsuarioId == userEntity.Id).Select(s => s.DoctorId).ToListAsync();
+                listadoDoctores = await _repository.GetDoctorByUser(userEntity.Id);
             }
-
-
-            var listadoDoctores = new List<Doctor>();
-
-            if (idsUserDoctor.Count != 0)
-            {
-                listadoDoctores = await _context.Doctor.Where(s=> idsUserDoctor.Contains(s.Id)).ToListAsync();
-            }
-
             List<DoctorViewModel> vms = new List<DoctorViewModel>();
 
             listadoDoctores.ForEach(item =>
@@ -67,7 +63,7 @@ namespace MantenimientoDoctor.Controllers
         //GET
         public async Task<IActionResult> Create()
         {
-            var especilidadEntity = await _context.Especialidad.ToListAsync();
+            var especilidadEntity = await _repositoryEspecialidad.GetAll();
 
             List<EspecialidadViewModel> listEspecialidadesVm = new List<EspecialidadViewModel>();
 
@@ -85,13 +81,13 @@ namespace MantenimientoDoctor.Controllers
         //GET
         public async Task<IActionResult> Edit(int? id)
         {
-          
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor.FirstOrDefaultAsync(x => x.Id == id);
+            var doctor = await _repository.GetById(id.Value);
 
             if (doctor == null)
             {
@@ -100,7 +96,7 @@ namespace MantenimientoDoctor.Controllers
 
             var vm = _mapper.Map<DoctorViewModel>(doctor);
 
-            var especilidadEntity = await _context.Especialidad.ToListAsync();
+            var especilidadEntity = await _repositoryEspecialidad.GetAll();
 
             List<EspecialidadViewModel> listEspecialidadesVm = new List<EspecialidadViewModel>();
 
@@ -112,7 +108,7 @@ namespace MantenimientoDoctor.Controllers
 
             ViewBag.Especialidades = listEspecialidadesVm;
 
-            var listEspecialidadIds = await _context.DoctorEspecialidad.Select(s => s.IdEspecialidad).ToListAsync();
+            var listEspecialidadIds = await _repositoryDoctorEspecialidad.GetDoctorEspecialidadIds(doctor.Id);
 
             vm.EspecialidadIds = listEspecialidadIds;
 
@@ -123,13 +119,13 @@ namespace MantenimientoDoctor.Controllers
         //GET
         public async Task<IActionResult> Delete(int? id)
         {
-         
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor.FirstOrDefaultAsync(x => x.Id == id);
+            var doctor = await _repository.GetById(id.Value);
 
             if (doctor == null)
             {
@@ -141,28 +137,28 @@ namespace MantenimientoDoctor.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(DoctorViewModel vm)
+        public async Task<IActionResult> Create(DoctorViewModel vm, IFormFile Photo)
         {
-          
+
 
             if (ModelState.IsValid)
             {
 
                 string uniqueName = null;
 
-                if (vm.Photo != null)
+                if (Photo != null)
                 {
 
-                    var folderPath = Path.Combine(hostingEnvironment.WebRootPath, "images/Doctor");
+                    var folderPath = Path.Combine(_hostingEnvironment.WebRootPath, "images/Doctor");
 
-                    uniqueName = Guid.NewGuid().ToString() + "_" + vm.Photo.FileName;
+                    uniqueName = Guid.NewGuid().ToString() + "_" + Photo.FileName;
 
                     var filePath = Path.Combine(folderPath, uniqueName);
 
                     if (filePath != null)
                     {
                         var stream = new FileStream(filePath, mode: FileMode.Create);
-                        vm.Photo.CopyTo(stream);
+                        Photo.CopyTo(stream);
                         stream.Flush();
                         stream.Close();
                     }
@@ -172,21 +168,8 @@ namespace MantenimientoDoctor.Controllers
                 var doctorEntity = _mapper.Map<Doctor>(vm);
                 doctorEntity.ProfilePhoto = uniqueName;
 
-                _context.Add(doctorEntity);
-                await _context.SaveChangesAsync();
-
-                foreach (var especialidadId in vm.EspecialidadIds)
-                {
-                    var doctorEspecilidad = new DoctorEspecialidad
-                    {
-                        IdDoctor = doctorEntity.Id,
-                        IdEspecialidad = especialidadId
-                    };
-
-                    _context.Add(doctorEspecilidad);
-                }
-
-                await _context.SaveChangesAsync();
+                await _repository.Add(doctorEntity);
+                await _repositoryDoctorEspecialidad.AddDoctorEspecialidades(vm.EspecialidadIds, doctorEntity.Id);
 
                 return RedirectToAction("Index");
             }
@@ -196,15 +179,15 @@ namespace MantenimientoDoctor.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int? Id, DoctorViewModel vm)
+        public async Task<IActionResult> Edit(int? Id, DoctorViewModel vm, IFormFile Photo)
         {
-          
+
             if (Id != vm.Id)
             {
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor.FirstOrDefaultAsync(w => w.Id == vm.Id);
+            var doctor = await _repository.GetById(vm.Id);
 
             if (doctor == null)
             {
@@ -215,12 +198,12 @@ namespace MantenimientoDoctor.Controllers
             {
                 string uniqueName = null;
 
-                if (vm.Photo != null)
+                if (Photo != null)
                 {
 
-                    var folderPath = Path.Combine(hostingEnvironment.WebRootPath, "images/Doctor");
+                    var folderPath = Path.Combine(_hostingEnvironment.WebRootPath, "images/Doctor");
 
-                    uniqueName = Guid.NewGuid().ToString() + "_" + vm.Photo.FileName;
+                    uniqueName = Guid.NewGuid().ToString() + "_" + Photo.FileName;
 
                     var filePath = Path.Combine(folderPath, uniqueName);
 
@@ -240,7 +223,7 @@ namespace MantenimientoDoctor.Controllers
                     if (filePath != null)
                     {
                         var stream = new FileStream(filePath, mode: FileMode.Create);
-                        vm.Photo.CopyTo(stream);
+                        Photo.CopyTo(stream);
                         stream.Flush();
                         stream.Close();
 
@@ -257,30 +240,9 @@ namespace MantenimientoDoctor.Controllers
                 doctor.Telefono = vm.Telefono;
                 doctor.ProfilePhoto = uniqueName;
 
-                _context.Update(doctor);
-                await _context.SaveChangesAsync();
+                await _repository.Update(doctor);
 
-                var especilidadesDoctor = await _context.DoctorEspecialidad.Where(w => w.IdDoctor == doctor.Id).ToListAsync();
-
-                foreach (var item in especilidadesDoctor)
-                {
-                    _context.DoctorEspecialidad.Remove(item);
-                }
-
-                await _context.SaveChangesAsync();
-
-                foreach (var especialidadId in vm.EspecialidadIds)
-                {
-                    var doctorEspecilidad = new DoctorEspecialidad
-                    {
-                        IdDoctor = doctor.Id,
-                        IdEspecialidad = especialidadId
-                    };
-
-                    _context.Add(doctorEspecilidad);
-                }
-
-                await _context.SaveChangesAsync();
+                await _repositoryDoctorEspecialidad.UpdateDoctorEspecialidades(vm.EspecialidadIds, doctor.Id);
 
                 return RedirectToAction("Index");
             }
@@ -298,16 +260,12 @@ namespace MantenimientoDoctor.Controllers
             //    return RedirectToAction("AccesoDenegado", "Home");
             //}
 
-            var doctor = await _context.Doctor.FirstOrDefaultAsync(x => x.Id == Id);
-
-            if (doctor == null)
+            if (Id == null)
             {
                 return NotFound();
             }
 
-            _context.Doctor.Remove(doctor);
-            await _context.SaveChangesAsync();
-
+            await _repository.DeleteDoctor(Id.Value);
             return RedirectToAction("Index");
         }
 

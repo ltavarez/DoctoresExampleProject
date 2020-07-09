@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Repository.Repository;
 
 namespace MantenimientoDoctor
 {
@@ -63,6 +64,11 @@ namespace MantenimientoDoctor
 
         
             services.AddScoped<IEmailSender, GmailSender>();
+
+            services.AddScoped<DoctorRepository>();
+            services.AddScoped<EspecialidadRepository>();
+            services.AddScoped<DoctorEspecialidadRepository>();
+            services.AddScoped<UsuarioDoctorRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

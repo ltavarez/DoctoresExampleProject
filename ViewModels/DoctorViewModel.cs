@@ -29,14 +29,12 @@ namespace ViewModels
         [Display(Name = "Codigo Postal")]
         public string CodigoPostal { get; set; }
 
-        [Display(Name = "Foto")]
-        public FormFile Photo { get; set; }
-
         [Display(Name = "Especialidades")]
         public List<int> EspecialidadIds { get; set; }
 
         public List<EspecialidadViewModel> Especialidades { get; set; }
 
+        [Display(Name = "Foto")]
         public string ProfilePhoto { get; set; }
 
 

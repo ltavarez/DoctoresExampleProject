@@ -20,7 +20,7 @@ namespace MantenimientoDoctor.Infraestructure.AutoMapper
 
         private void ConfigureDoctor()
         {
-            CreateMap<DoctorViewModel, Doctor>().ReverseMap().ForMember(dest => dest.Photo, opt => opt.Ignore())
+            CreateMap<DoctorViewModel, Doctor>().ReverseMap()
                 .ForMember(dest => dest.EspecialidadIds, opt => opt.Ignore())
                 .ForMember(dest => dest.Especialidades, opt => opt.Ignore());
         }

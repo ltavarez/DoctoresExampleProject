@@ -62,7 +62,7 @@ else
                     <div class="form-group col-md-4">
                         <label asp-for="EspecialidadIds"></label>
                         <select asp-for="EspecialidadIds" asp-items="@(new SelectList(ViewBag.Especialidades, "Id", "Nombre"))" multiple="multiple" asp class="form-control"></select>
-                        <span asp-validation-for="Photo" class="text-danger"> </span>
+                        <span asp-validation-for="EspecialidadIds" class="text-danger"> </span>
                     </div>
 
                     <div class="col-md-4 form-group">
@@ -77,9 +77,9 @@ else
 
                             <div class="card-body">
 
-                                <label asp-for="Photo"></label>
-                                <input asp-for="Photo" class="form-control">
-                                <span asp-validation-for="Photo" class="text-danger"> </span>
+                                <label for="photo"></label>
+                                <input id="photo" type="file" name="Photo" class="form-control">
+                               
 
                             </div>
                         </div>

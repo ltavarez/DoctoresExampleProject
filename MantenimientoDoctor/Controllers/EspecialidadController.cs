@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Database.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Repository.Repository;
 using ViewModels;
 
 namespace MantenimientoDoctor.Controllers
@@ -16,19 +17,19 @@ namespace MantenimientoDoctor.Controllers
     [Authorize(Roles = "especialista,doctor")]
     public class EspecialidadController : Controller
     {
-        private readonly ConsultorioMedicoContext _context;
-        private readonly IMapper _mapper;
+      private readonly IMapper _mapper;
+        private readonly EspecialidadRepository _repository;
 
-        public EspecialidadController(ConsultorioMedicoContext context, IMapper mapper)
+        public EspecialidadController( IMapper mapper, EspecialidadRepository repository)
         {
-            _context = context;
             _mapper = mapper;
+            _repository = repository;
         }
 
         // GET: Especialidad
         public async Task<IActionResult> Index()
         {
-           var listEntity = await _context.Especialidad.ToListAsync();
+            var listEntity = await _repository.GetAll();
 
             List<EspecialidadViewModel> vms = new List<EspecialidadViewModel>();
 
@@ -51,8 +52,7 @@ namespace MantenimientoDoctor.Controllers
                 return NotFound();
             }
 
-            var especialidad = await _context.Especialidad
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var especialidad = await _repository.GetById(id.Value);
             if (especialidad == null)
             {
                 return NotFound();
@@ -79,10 +79,8 @@ namespace MantenimientoDoctor.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var entity = _mapper.Map<Especialidad>(vm);
-                _context.Add(entity);
-                await _context.SaveChangesAsync();
+                await _repository.Add(entity);
                 return RedirectToAction(nameof(Index));
             }
             return View(vm);
@@ -91,13 +89,12 @@ namespace MantenimientoDoctor.Controllers
         // GET: Especialidad/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-           
             if (id == null)
             {
                 return NotFound();
             }
 
-            var especialidad = await _context.Especialidad.FindAsync(id);
+            var especialidad = await _repository.GetById(id.Value);
             if (especialidad == null)
             {
                 return NotFound();
@@ -129,12 +126,13 @@ namespace MantenimientoDoctor.Controllers
                         Nombre = vm.Nombre
                     };
 
-                    _context.Update(entity);
-                    await _context.SaveChangesAsync();
+                    await _repository.Update(entity);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EspecialidadExists(vm.Id))
+
+                    var isExists = await EspecialidadExists(vm.Id);
+                    if (!isExists)
                     {
                         return NotFound();
                     }
@@ -157,8 +155,7 @@ namespace MantenimientoDoctor.Controllers
                 return NotFound();
             }
 
-            var especialidad = await _context.Especialidad
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var especialidad = await _repository.GetById(id.Value);
             if (especialidad == null)
             {
                 return NotFound();
@@ -178,15 +175,13 @@ namespace MantenimientoDoctor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-           var especialidad = await _context.Especialidad.FindAsync(id);
-            _context.Especialidad.Remove(especialidad);
-            await _context.SaveChangesAsync();
+           await _repository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EspecialidadExists(int id)
+        private async Task<bool> EspecialidadExists(int id)
         {
-            return _context.Especialidad.Any(e => e.Id == id);
+            return await _repository.AnyEspecialidad(id);
         }
     }
 }
