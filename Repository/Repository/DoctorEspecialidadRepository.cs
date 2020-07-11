@@ -64,6 +64,32 @@ namespace Repository.Repository
             }
         }
 
+        public async Task<bool> DeleteDoctorEspecialidadId(int doctorId)
+        {
+
+            try
+            {
+                var doctorEspecialidad = await base._context.DoctorEspecialidad.Where(c => c.IdDoctor == doctorId).ToListAsync();
+
+                foreach (var item in doctorEspecialidad)
+                {
+                    _context.Remove(item);
+                }
+
+                await _context.SaveChangesAsync();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine(e);
+                return false;
+            }
+
+        }
+
         public async Task<List<int>> GetDoctorEspecialidadIds(int idDoctor)
         {
             return await _context.DoctorEspecialidad.Where(c=> c.IdDoctor == idDoctor).Select(x => x.IdEspecialidad).ToListAsync();
