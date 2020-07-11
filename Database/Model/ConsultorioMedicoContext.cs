@@ -25,6 +25,8 @@ namespace Database.Model
         public virtual DbSet<UsuarioDoctor> UsuarioDoctor { get; set; }
         public virtual DbSet<Visits> Visits { get; set; }
 
+        public virtual DbSet<Session> Sessions { get; set; }
+
         // Unable to generate entity type for table 'dbo.EspecialidadAudit'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -40,7 +42,16 @@ namespace Database.Model
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
-        
+
+
+            modelBuilder.Entity<Session>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+
+                entity.Property(e => e.Token).HasMaxLength(250);
+
+             
+            });
 
 
             modelBuilder.Entity<Doctor>(entity =>

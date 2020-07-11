@@ -41,6 +41,7 @@ namespace API
             services.AddScoped<EspecialidadRepository>();
             services.AddScoped<DoctorEspecialidadRepository>();
             services.AddScoped<UsuarioDoctorRepository>();
+            services.AddScoped<SessionRepository>();
 
             services.AddSwaggerGen();
         }
